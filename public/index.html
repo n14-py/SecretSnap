@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SecretSnap - Inicio</title>
+</head>
+<body>
+  <div style="padding: 20px;">
+    <h2>Registro</h2>
+    <input type="text" id="reg-username" placeholder="Usuario">
+    <input type="password" id="reg-password" placeholder="Contraseña">
+    <button onclick="register()">Registrarse</button>
+
+    <h2>Login</h2>
+    <input type="text" id="login-username" placeholder="Usuario">
+    <input type="password" id="login-password" placeholder="Contraseña">
+    <button onclick="login()">Ingresar</button>
+  </div>
+
+  <script>
+    async function register() {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('reg-username').value,
+          password: document.getElementById('reg-password').value
+        })
+      });
+      alert(await response.text());
+    }
+
+    async function login() {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('login-username').value,
+          password: document.getElementById('login-password').value
+        })
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        window.location.href = `/dashboard.html?link=${data.link}`;
+      } else {
+        alert(data);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tu Panel - SecretSnap</title>
+</head>
+<body>
+  <div style="padding: 20px;">
+    <h1>🔗 Tu Enlace Único:</h1>
+    <div id="unique-link" style="word-break: break-all; margin-bottom: 30px;"></div>
+    
+    <h2>📨 Tus Mensajes</h2>
+    <div id="messages-container" style="border: 1px solid #ccc; padding: 10px;"></div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/index.html';
+
+    async function loadMessages() {
+      const response = await fetch('/api/messages/my-messages', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      const messages = await response.json();
+      document.getElementById('messages-container').innerHTML = messages
+        .map(msg => `<div style="margin: 10px; padding: 10px; border-bottom: 1px solid #eee;">${msg.content}</div>`)
+        .join('');
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const userLink = `${window.location.origin}/send.html?u=${urlParams.get('link')}`;
+    document.getElementById('unique-link').innerHTML = `
+      <input type="text" value="${userLink}" style="width: 300px;" readonly>
+      <button onclick="navigator.clipboard.writeText('${userLink}')">Copiar</button>
+    `;
+
+    loadMessages();
+  </script>
+</body>
+</html>
